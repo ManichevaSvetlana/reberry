@@ -6,7 +6,7 @@ use App\Models\Country;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
-class CountriesTableSeed extends Command
+class CountriesTableSeedCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -23,6 +23,13 @@ class CountriesTableSeed extends Command
     protected $description = 'Seed countries table from devtest APIs';
 
     /**
+     * Countries API URL.
+     *
+     * @var string
+     */
+    protected $apiUrl = 'https://devtest.ge/countries';
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -35,12 +42,14 @@ class CountriesTableSeed extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
-        $countries = Http::get('https://devtest.ge/countries');
-        $countries = json_decode($countries->body(), true);
+        // Get countries list from APIs
+        $countries = json_decode( Http::get($this->apiUrl)->body(), true );
+
+        // Store [update or create] each country to database
         foreach ($countries as $country) {
             $resource = Country::updateOrCreate(
                 ['code' => $country['code']],

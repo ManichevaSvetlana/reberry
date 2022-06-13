@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Fetch covid statistics data for each country
+        $schedule->command('fetch:statistics')->hourly();
     }
 
     /**
