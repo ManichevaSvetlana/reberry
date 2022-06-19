@@ -12,10 +12,13 @@ class SanctumRefresh
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
+        $token = $request->user()->checkTokenForRefresh();
+        if($token !== false) return response()->json(['message' => 'Your token needed a refresh. Please retry the request with a new token.', 'token' => $token], 577);
+
         return $next($request);
     }
 }

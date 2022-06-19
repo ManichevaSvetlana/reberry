@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+/* Auth Routes */
+// Login & Issue a new token
+Route::post('/login', [\App\Http\Controllers\API\AuthController::class, 'login']);
+// Register & Issue a new token
+Route::post('/register', [\App\Http\Controllers\API\AuthController::class, 'register']);
+// Sanctum protected routes
+Route::group(['middleware' => ['auth:sanctum', 'refresh']], function () {
+    // Get the current user
+    Route::get('/user', [\App\Http\Controllers\API\AuthController::class, 'user']);
+    // Forget token
+    Route::post('/logout', [\App\Http\Controllers\API\AuthController::class, 'logout']);
 });
+/* End of Auth Routes */

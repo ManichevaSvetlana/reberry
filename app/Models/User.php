@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -41,4 +42,34 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Refresh the token.
+     *
+     * @param bool $createNew
+     * @param string|null $device
+     * @return mixed
+     */
+    public function refreshToken(bool $createNew = true, string $device = null)
+    {
+        $device = $device ?? 'web';
+        $this->tokens()->where('name', $device)->delete();
+        return $createNew ? $this->createToken($device)->plainTextToken : true;
+    }
+
+    /**
+     * Check if token needs to be refreshed.
+     *
+     * @return mixed
+     */
+    public function checkTokenForRefresh(): mixed
+    {
+        $token = $this->currentAccessToken();
+        $expiration = config('sanctum.expiration');
+
+        // Refresh the token 30 min before the expiration [if the session is active]
+        if(Carbon::now() >= Carbon::make($token->created_at)->addMinutes($expiration - 30)) return $this->refreshToken();
+
+        return false;
+    }
 }
