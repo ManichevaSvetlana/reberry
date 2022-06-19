@@ -25,6 +25,8 @@ Route::group(['middleware' => ['auth:sanctum', 'refresh']], function () {
     Route::get('/countries', [\App\Http\Controllers\API\CountriesController::class, 'resources']);
     // Get information about the country
     Route::get('/countries/{code}', [\App\Http\Controllers\API\CountriesController::class, 'resource']);
+    // Get total information about today
+    Route::get('/total', [\App\Http\Controllers\API\CountriesController::class, 'total']);
     // Get the current user
     Route::get('/user', [\App\Http\Controllers\API\AuthController::class, 'user']);
     // Forget token

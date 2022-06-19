@@ -4,10 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Country;
-use Carbon\Carbon;
+use App\Models\Statistics;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 
 class CountriesController extends Controller
 {
@@ -39,7 +38,6 @@ class CountriesController extends Controller
     /**
      * Get information about the country.
      *
-     * @param Request $request
      * @param string $code
      * @return \Illuminate\Http\JsonResponse
      */
@@ -47,5 +45,15 @@ class CountriesController extends Controller
     {
         $resource = Country::withTodayStatistics()->where('code', $code)->firstOrFail();
         return response()->json($resource);
+    }
+
+    /**
+     * Get total information about today.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function total(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(['death' => Statistics::total('death'), 'recovered' => Statistics::total('recovered'), 'confirmed' => Statistics::total('confirmed')]);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Country;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/testss', function () {
+    foreach (Country::all() as $country) {
+        $country->save();
+    }
+});
 
 Route::get('/', function () {
     return view('welcome');
