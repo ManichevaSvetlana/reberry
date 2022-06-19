@@ -27,9 +27,7 @@ class CountriesController extends Controller
         if(!in_array($sort, ['confirmed', 'recovered', 'death'])) $sort = 'country';
 
         // Filter Countries
-        $resources = Country::join('statistics', function ($join) {
-            $join->on('statistics.country_id', '=', 'countries.id')->whereDate('statistics.created_at', Carbon::today());
-        });
+        $resources = Country::withTodayStatistics();
         if($searchString) $resources = $resources->whereRaw("UPPER(name) LIKE '%". strtoupper($searchString)."%'")->orwhereRaw("UPPER(code) LIKE '%". strtoupper($searchString)."%'");
         if($sort == 'country') $resources = $resources->orderBy('name', $order, App::getLocale());
         else $resources = $resources->orderBy(('statistics.' . $sort), $order);

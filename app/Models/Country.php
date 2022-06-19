@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Spatie\Translatable\HasTranslations;
 
@@ -107,22 +106,14 @@ class Country extends Model
 
 
     /**
-     * Save the model to the database.
+     * Method: get countries with today statistics.
      *
-     * @param array $options
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function save(array $options = [])
+    public static function withTodayStatistics(): \Illuminate\Database\Eloquent\Builder
     {
-        $response = parent::save($options);
-        try {
-            $resource = DB::table($this->getTable())->where('id', $this->id)->first();
-            $translations = json_decode($resource->name, true);
-            $translations = json_encode($translations, JSON_UNESCAPED_UNICODE);
-            DB::table($this->getTable())->where('id', $this->id)->update(['name' => $translations]);
-        } catch (\Exception $exception) {
-
-        }
-        return $response;
+        return Country::join('statistics', function ($join) {
+            $join->on('statistics.country_id', '=', 'countries.id')->whereDate('statistics.created_at', Carbon::today());
+        });
     }
 }
