@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Country;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class FetchStatisticsCommand extends Command
 {
