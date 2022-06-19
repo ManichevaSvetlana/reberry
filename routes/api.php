@@ -21,6 +21,10 @@ Route::post('/login', [\App\Http\Controllers\API\AuthController::class, 'login']
 Route::post('/register', [\App\Http\Controllers\API\AuthController::class, 'register']);
 // Sanctum protected routes
 Route::group(['middleware' => ['auth:sanctum', 'refresh']], function () {
+    // Get countries with the statistics information
+    Route::get('/countries', [\App\Http\Controllers\API\CountriesController::class, 'resources']);
+    // Get information about the country
+    Route::get('/countries/{code}', [\App\Http\Controllers\API\CountriesController::class, 'resource']);
     // Get the current user
     Route::get('/user', [\App\Http\Controllers\API\AuthController::class, 'user']);
     // Forget token

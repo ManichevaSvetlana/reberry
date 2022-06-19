@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Carbon\Exceptions\Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Spatie\Translatable\HasTranslations;
 
@@ -30,11 +30,28 @@ class Country extends Model
     protected $fillable = ['code', 'name'];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['name_local'];
+
+    /**
      * Statistics API URL.
      *
      * @var string
      */
     protected $apiUrl = 'https://devtest.ge/get-country-statistics';
+
+    /**
+     * Attribute: get translatable name for the current language.
+     *
+     * @return ?string
+     */
+    public function getNameLocalAttribute(): ?string
+    {
+        return $this->getTranslation('name', App::getLocale());
+    }
 
     /**
      * Relation: has many Statistics.
@@ -44,6 +61,16 @@ class Country extends Model
     public function statistics(): HasMany
     {
         return $this->hasMany(Statistics::class);
+    }
+
+    /**
+     * Relation: has many  today Statistics.
+     *
+     * @return HasMany
+     */
+    public function todayStatistics(): HasMany
+    {
+        return $this->statistics()->whereDate('created_at', Carbon::today());
     }
 
     /**
@@ -73,6 +100,6 @@ class Country extends Model
      */
     public function checkIfTodayStatisticsExists() : bool
     {
-        return $this->statistics()->whereDate('created_at', Carbon::today())->exists();
+        return $this->todayStatistics()->exists();
     }
 }
