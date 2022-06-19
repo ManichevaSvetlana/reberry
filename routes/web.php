@@ -14,12 +14,3 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/testss', function () {
-    foreach (Country::all() as $country) {
-        $country->save();
-    }
-});
-
-Route::get('/', function () {
-    return view('welcome');
-});
