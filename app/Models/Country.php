@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Spatie\Translatable\HasTranslations;
 
@@ -101,5 +102,27 @@ class Country extends Model
     public function checkIfTodayStatisticsExists() : bool
     {
         return $this->todayStatistics()->exists();
+    }
+
+
+
+    /**
+     * Save the model to the database.
+     *
+     * @param array $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        $response = parent::save($options);
+        try {
+            $resource = DB::table($this->getTable())->where('id', $this->id)->first();
+            $translations = json_decode($resource->name, true);
+            $translations = json_encode($translations, JSON_UNESCAPED_UNICODE);
+            DB::table($this->getTable())->where('id', $this->id)->update(['name' => $translations]);
+        } catch (\Exception $exception) {
+
+        }
+        return $response;
     }
 }
